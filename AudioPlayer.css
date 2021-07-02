@@ -2,6 +2,8 @@
 	--audio-player-accent-color: #05f;
 	--audio-player-background-color: rgba(25, 25, 25, 0.4);
 	--audio-player-indicator-color: rgba(255, 255, 255, 0.1);
+	--audio-player-sample-count: 0;
+	--audio-player-stroke-width: calc(1 / 500);
 	--height: 100px;
 }
 
@@ -66,6 +68,12 @@
 	pointer-events: none;
 }
 
+:host([loading]) .visualizer,
+.audio-player.loading .play-button {
+	opacity: 0;
+	pointer-events: none;
+}
+
 :host([narrow]) .visualizer-samples data:not(:nth-child(3n + 1)),
 .audio-player.narrow .visualizer-samples data:not(:nth-child(3n + 1)) {
 	display: none;
@@ -120,7 +128,7 @@
 	transition: fill 0.3s;
 }
 .play-button-icon .pause {
-	fill: rgba(0, 0, 0, 0);
+	fill: transparent;
 }
 .play-button-icon .play {
 	fill: var(--audio-player-accent-color);
@@ -132,9 +140,11 @@
 	position: relative;
 	width: calc(100% - 4px);
 	height: 100%;
+	opacity: 1;
 
 	background: var(--audio-player-background-color);
 	cursor: pointer;
+	transition: opacity 0.3s, background 0.3s;
 }
 
 .visualizer-progress-indicator {
@@ -216,6 +226,37 @@
 }
 .load-icon line:nth-child(7) {
 	animation-delay: 1.2s;
+}
+
+/*New, to integrate*/
+.visualizer {
+	width: calc(100% - 4px);
+	margin: 0 2px;
+
+	background: var(--audio-player-background-color);
+	cursor: none;
+}
+.waveform {
+	stroke: var(--audio-player-accent-color);
+	stroke-width: var(--audio-player-stroke-width);
+
+	transition: stroke 0.3s;
+}
+.cursor {
+	pointer-events: none;
+	stroke: transparent;
+	stroke-width: var(--audio-player-stroke-width);
+	transition: stroke 0.3s;
+}
+.cursor.highlighted {
+	stroke: white;
+}
+.cursor.active {
+	stroke: var(--audio-player-indicator-color);
+}
+.progress-indicator {
+	fill: var(--audio-player-indicator-color);
+	transition: fill 0.3s;
 }
 
 @keyframes load {
