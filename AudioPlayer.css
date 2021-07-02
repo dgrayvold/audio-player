@@ -1,7 +1,9 @@
 :host {
 	--audio-player-accent-color: #005fff;
 	--audio-player-background-color: rgba(25, 25, 25, 0.4);
-	--audio-player-cursor-style: pointer;
+	--audio-player-background-contrast-color: white;
+	--audio-player-background-shade-color: rgba(50, 50, 50, 0.4);
+	--audio-player-cursor-color: black;
 	--audio-player-indicator-color: #335;
 	--audio-player-sample-count: 0;
 	--audio-player-stroke-width: calc(1 / 500);
@@ -11,24 +13,17 @@
 	display: grid;
 	position: relative;
 	width: 100%;
-	margin: 0;
+	height: auto;
 	padding: 0;
-	height: var(--audio-player-height);
 	grid-auto-flow: column;
 	grid-template-columns: var(--audio-player-height) 1fr;
+	grid-template-rows: var(--audio-player-height) auto;
 	align-items: center;
 	background: var(--audio-player-background-color);
 	border: 2px solid #333;
 	box-sizing: border-box;
 	cursor: pointer;
 	transition: border 0.3s, height 0.3s, grid-template-columns 0.3s;
-}
-:host([compact]) {
-	--audio-player-height: 50px;
-}
-:host([compact]) .play-button-icon {
-	width: 100%;
-	height: 100%;
 }
 :host(:focus),
 :host(:focus-within) {
@@ -40,6 +35,13 @@
 :host(:hover) .play-button {
 	background: var(--audio-player-indicator-color);
 }
+:host([compact]) {
+	--audio-player-height: 50px;
+}
+:host([compact]) .play-button-icon {
+	width: 100%;
+	height: 100%;
+}
 :host([loading]) {
 	pointer-events: none;
 }
@@ -50,6 +52,10 @@
 	animation-play-state: running;
 }
 :host([loading]) .play-button {
+	opacity: 0;
+	pointer-events: none;
+}
+:host([loading]) .playlist {
 	opacity: 0;
 	pointer-events: none;
 }
@@ -69,22 +75,42 @@
 :host audio {
 	display: none;
 }
+#audio-player-description {
+	position: absolute;
+	top: -100000px;
+	left: -1000000px;
+}
 .cursor {
 	pointer-events: none;
 	stroke: transparent;
 	stroke-width: var(--audio-player-stroke-width);
+	transform: scaleY(0.75);
+	transform-origin: center center;
 	transition: stroke 0.3s;
 }
 .cursor.active {
-	stroke: var(--audio-player-indicator-color);
+	stroke: var(--audio-player-cursor-color);
+}
+.creator {
+	pointer-events: none;
+}
+.creator::before {
+	content: '\2014';
+	margin: 0 4px;
+}
+.creator:empty {
+	display: none;
 }
 .load-icon {
 	position: absolute;
+	top: 50%;
 	left: 50%;
 	height: 100%;
+	max-height: 75px;
 	opacity: 0;
 	pointer-events: none;
-	transform: translateX(-50%);
+	transform: translate(-50%, -50%);
+	transform-origin: center center;
 	transition: opacity 0.3s;
 }
 .load-icon line {
@@ -115,6 +141,7 @@
 	animation-delay: 1.2s;
 }
 .play-button {
+	grid-row: 1;
 	display: inline-block;
 	height: 100%;
 	margin: 0;
@@ -144,13 +171,54 @@
 .play-button-icon .play {
 	fill: var(--audio-player-accent-color);
 }
+.playlist {
+	display: none;
+	grid-column: 1 / -1;
+	grid-row: 2;
+	margin: 0;
+	margin-top: 4px;
+	padding: 0;
+	max-height: 10.5rem;
+	list-style-type: none;
+	overflow-y: scroll;
+	pointer-events: all;
+	transition: opacity 0.3s;
+}
+.playlist.active {
+	display: block;
+}
 .progress-indicator {
 	fill: var(--audio-player-indicator-color);
 	transform: scaleX(0);
 	transform-origin: left center;
 	transition: fill 0.3s;
 }
+.source {
+	padding-left: 4px;
+	color: var(--audio-player-background-contrast-color);
+	font-size: 1rem;
+	font-variant: all-small-caps;
+	font-variant-numeric: oldstyle-nums;
+	line-height: 2rem;
+	text-align: left;
+	transition: background 0.3s, color 0.3s;
+}
+.source:hover,
+.source.active:hover,
+.source:nth-child(2n - 1):hover {
+	background: var(--audio-player-indicator-color);
+}
+.source:nth-child(2n - 1) {
+	background: var(--audio-player-background-shade-color);
+}
+.source.active {
+	color: var(--audio-player-accent-color);
+}
+.source.highlighted {
+	background: var(--audio-player-indicator-color);
+}
 .visualizer {
+	grid-row: 1;
 	margin: 0;
 	margin-left: 4px;
 	position: relative;
@@ -158,12 +226,14 @@
 	height: 100%;
 	opacity: 1;
 	background: var(--audio-player-background-color);
-	cursor: var(--audio-player-cursor-style);
+	cursor: pointer;
 	transition: opacity 0.3s, background 0.3s;
 }
 .waveform {
 	stroke: var(--audio-player-accent-color);
 	stroke-width: var(--audio-player-stroke-width);
+	transform: scaleY(0.75);
+	transform-origin: center center;
 	transition: stroke 0.3s;
 }
 @keyframes load {
