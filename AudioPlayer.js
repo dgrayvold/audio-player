@@ -147,7 +147,7 @@ export const AudioPlayer = (async function () {
 			case 'click':
 			case 'mousemove':
 				position = Math.floor((e.clientX - rect.left) / (rect.width / sampleCount));
-				if (position > sampleCount - 1) {
+				if (position > sampleCount - 1 || position < 0) {
 					return;
 				}
 				if (sampleCount == SAMPLE_COUNT) {
@@ -157,6 +157,8 @@ export const AudioPlayer = (async function () {
 				}
 				if (height < 0.05) {
 					height = 1;
+				} else if (Object.is(height, NaN)) {
+					height = 50;
 				}
 				cursor.setAttribute('x1', position * (100 / sampleCount) + 100 / sampleCount / 2);
 				cursor.setAttribute('x2', position * (100 / sampleCount) + 100 / sampleCount / 2);

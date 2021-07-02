@@ -126,6 +126,9 @@
 	opacity: 1;
 	transition: opacity 0.3s, background 0.3s, width 0.3s, height 0.3s;
 }
+.play-button:focus {
+	outline: none;
+}
 .play-button-icon {
 	width: 75%;
 	height: 75%;
